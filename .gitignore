@@ -37,3 +37,8 @@ jspm_packages
 .node_repl_history
 
 /public/dist
+
+.idea
+package.json
+package-lock.json
+yarn.lock
