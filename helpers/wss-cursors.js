@@ -7,11 +7,17 @@ module.exports = function(server) {
 
   function notifyConnections(sourceId) {
     connections.forEach(function(connection) {
-      sessions[connection.id].send(JSON.stringify({
-        id: connection.id,
-        sourceId: sourceId,
-        connections: connections
-      }));
+      try {
+        sessions[connection.id].send(JSON.stringify({
+          id: connection.id,
+          sourceId: sourceId,
+          connections: connections
+        }));
+      }
+      catch (error) {
+        sessions[connection.id] = null;
+        console.error(error);
+      }
     });
   }
 
@@ -23,7 +29,6 @@ module.exports = function(server) {
   });
 
   wss.on('connection', function(ws, req) {
-
     // generate an id for the socket
     ws.id = uuid();
     ws.isAlive = true;
@@ -107,6 +112,8 @@ module.exports = function(server) {
         }))) {
 
         debug('Errored connection:\n%O', connections[connectionIndex]);
+
+        connections.splice(connectionIndex, 1);
       }
     });
 
